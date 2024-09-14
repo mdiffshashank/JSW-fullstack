@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const path = require("path");
 const jwt = require("jsonwebtoken");
 const bodyParser = require("body-parser");
 require("dotenv").config();
@@ -16,6 +17,8 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+
+app.use(express.static(path.join(__dirname, "../client/build")));
 
 //dummy user
 const user = {
@@ -67,6 +70,12 @@ app.get("/api/dashboard", (req, res) => {
     res.status(401).json({ message: "Unauthorized" });
   }
 });
+
+// All other requests should be redirected to the React app
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../client/build", "index.html"));
+});
+
 //catch all route should be written at last
 app.use((req, res) => {
   console.log("other api");
